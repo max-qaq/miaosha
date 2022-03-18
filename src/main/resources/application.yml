@@ -1,0 +1,40 @@
+spring:
+#  thymeleaf配置
+  thymeleaf:
+    cache: false
+#    数据源配置
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://101.35.1.194:3306/seckill?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
+    username: root
+    password: Mazhiyong1417
+    hikari:
+      #      连接池名
+      pool-name: DataHikaRiCP
+#      最小连接数
+      minimum-idle: 5
+#      空闲连接存活时间 默认600000(10分钟) 30min
+      idle-timeout: 1800000
+#      最大连接数
+      maximum-pool-size: 10
+#      自动提交
+      auto-commit: true
+      #      连接最大存活时间
+      max-lifetime: 1800000
+      #      连接超时时间 30s
+      connection-timeout: 30000
+#      心跳机制,测试连接是否正常
+      connection-test-query: SELECT 1
+#mybatis plus 配置
+mybatis-plus:
+#  设置xml映射文件
+  mapper-locations: classpath*:/mapper/*Mapper.xml
+#  配置返回类别名,默认是类名 开启了配置之后写xml的时候默认在这个包下去找bean
+  type-aliases-package: com.edu.maxqaq.pojo
+
+#  打印mapper日志,在mapper接口所在包
+logging:
+  level:
+    com.edu.maxqaq.mapper: debug
+
+
