@@ -30,11 +30,11 @@ mybatis-plus:
 #  设置xml映射文件
   mapper-locations: classpath*:/mapper/*Mapper.xml
 #  配置返回类别名,默认是类名 开启了配置之后写xml的时候默认在这个包下去找bean
-  type-aliases-package: com.edu.maxqaq.pojo
+  type-aliases-package: com.edu.maxqaq.entity
 
 #  打印mapper日志,在mapper接口所在包
 logging:
   level:
     com.edu.maxqaq.mapper: debug
-
-
+server:
+  port: 9091

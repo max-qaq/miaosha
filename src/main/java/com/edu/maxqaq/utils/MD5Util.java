@@ -1,6 +1,7 @@
 package com.edu.maxqaq.utils;
 
 import org.apache.commons.codec.digest.DigestUtils;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 
 /**
@@ -15,11 +16,11 @@ public class MD5Util {
         return DigestUtils.md5Hex(src);
     }
 
-    private static final String salt = "1d2c3b4a";
+    private static final String salt = "1a2b3c4d";
 
     //前端密码第一次加密
     public static String inputPassToFormPass(String inputPass){
-        String str = salt.charAt(0) + salt.charAt(5) + inputPass + salt.charAt(4);
+        String str = "" + salt.charAt(0) + salt.charAt(2) + inputPass + salt.charAt(5) + salt.charAt(4);
         return md5(str);
     }
 
@@ -35,4 +36,12 @@ public class MD5Util {
         return dbPass;
     }
 
+    public static void main(String[] args) {
+        String str = "c3f53af99f9214cd7a252899065cb0fc";
+        String passwd = "4587889";
+        String jiami1 = inputPassToFormPass(passwd);
+        String jiami2 = FormPasstoDBPass(jiami1,"1a2b3c4d");
+        System.out.println(jiami1);
+        System.out.println(jiami2);
+    }
 }
