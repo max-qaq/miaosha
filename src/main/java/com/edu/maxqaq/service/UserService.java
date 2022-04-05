@@ -5,6 +5,9 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.edu.maxqaq.vo.LoginVo;
 import com.edu.maxqaq.vo.RespBean;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 /**
  * <p>
  *  服务类
@@ -15,5 +18,6 @@ import com.edu.maxqaq.vo.RespBean;
  */
 public interface UserService extends IService<User> {
 
-    RespBean doLogin(LoginVo loginVo);
+    RespBean doLogin(LoginVo loginVo, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse);
+
 }

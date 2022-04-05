@@ -1,6 +1,10 @@
 package com.edu.maxqaq.vo;
 
+import com.edu.maxqaq.utils.validator.IsMobile;
 import lombok.Data;
+import org.hibernate.validator.constraints.Length;
+
+import javax.validation.constraints.NotNull;
 
 /**
  * @program: miaosha
@@ -10,6 +14,11 @@ import lombok.Data;
  **/
 @Data
 public class LoginVo {
+    @NotNull
+    @IsMobile
     private String mobile;
+
+    @NotNull
+    @Length(min = 3)
     private String password;
 }
