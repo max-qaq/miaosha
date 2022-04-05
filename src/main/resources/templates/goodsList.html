@@ -28,14 +28,6 @@
 
 <div class="panel panel-default">
 
-    56	如果需要更多优质的J ava、Python、架构、大数据等IT资料请加微信：l ezi j i e007
-
-
-
-    智者乐水 仁者乐山 程序员 乐字节
-
-
-
     <div class="panel-heading">秒杀商品列表</div> <table class="table" id="goodslist">
     <tr>
         <td>商品名称</td> <td>商品图片</td>
@@ -53,7 +45,7 @@
 
         <td th:text="${goods.goodsPrice}"></td> <td th:text="${goods.seckillPrice}"></td>
         <td th:text="${goods.stockCount}"></td>
-        <td><a th:href="'/goods/toDetail/'+${goods.id}">详情</a></td>
+        <td><a th:href="'/goods/toDetail/'+${goods.goodsId}">详情</a></td>
     </tr>
 
 </table>

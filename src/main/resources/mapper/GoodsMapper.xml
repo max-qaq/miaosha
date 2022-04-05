@@ -15,7 +15,7 @@
 
     <select id="findGoodsVo" resultType="com.edu.maxqaq.vo.GoodsVo">
         SELECT
-            g.id,
+            g.id goods_id,
             g.goods_name,
             g.goods_title,
             g.goods_img,
@@ -29,5 +29,25 @@
         FROM
             t_goods g
                 LEFT JOIN t_seckill_goods sg ON g.id = sg.goods_id
+    </select>
+
+    <select id="findGoodsVoByGoodsId" resultType="com.edu.maxqaq.vo.GoodsVo">
+        SELECT
+            g.id goods_id,
+            g.goods_name,
+            g.goods_title,
+            g.goods_img,
+            g.goods_detail,
+            g.goods_price,
+            g.goods_stock,
+            sg.seckill_price,
+            sg.stock_count,
+            sg.start_date,
+            sg.end_date
+        FROM
+            t_goods g
+                LEFT JOIN t_seckill_goods sg ON g.id = sg.goods_id
+        WHERE
+            g.id = #{goodsId};
     </select>
 </mapper>
