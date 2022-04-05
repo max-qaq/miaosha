@@ -24,7 +24,10 @@ public class GeneratorUtil {
 
     public static void main(String[] args) {
         List<String> tables = new ArrayList<>();
-        tables.add("t_user");
+        tables.add("t_goods");
+        tables.add("t_order");
+        tables.add("t_seckill_goods");
+        tables.add("t_seckill_order");
 
         FastAutoGenerator.create(url, username, password)
                 .globalConfig(builder -> {

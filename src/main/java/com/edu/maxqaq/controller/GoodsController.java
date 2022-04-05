@@ -1,6 +1,7 @@
 package com.edu.maxqaq.controller;
 
 import com.edu.maxqaq.entity.User;
+import com.edu.maxqaq.service.GoodsService;
 import com.edu.maxqaq.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -26,6 +27,9 @@ public class GoodsController {
     @Autowired
     UserService userService;
 
+    @Autowired
+    GoodsService goodsService;
+
     @RequestMapping("/toList")
     public String toList (Model model ,User user){
 //        if (null == userTicket){
@@ -40,6 +44,7 @@ public class GoodsController {
         }
         //在模型里面设置user
         model.addAttribute("user",user);
+        model.addAttribute("goodsList",goodsService.findGoodsVo());
         return "goodsList";
     }
 }
