@@ -25,6 +25,32 @@ spring:
       connection-timeout: 30000
 #      心跳机制,测试连接是否正常
       connection-test-query: SELECT 1
+  redis:
+#    服务器地址
+    host: 101.35.1.194
+#    redis端口号
+    port: 6379
+#    默认数据库
+    database: 0
+    #    超时时间
+    timeout: 10000ms
+#    对象连接池
+    lettuce:
+      pool:
+#        最大连接数
+        max-active: 8
+#        最大等待时间默认-1不过期
+        max-wait: 10000ms
+#        最大空闲连接
+        max-idle: 200
+#        最小空闲连接
+        min-idle: 5
+
+    #密码
+    password: mazhiyong
+
+
+#      redis配置
 #mybatis plus 配置
 mybatis-plus:
 #  设置xml映射文件

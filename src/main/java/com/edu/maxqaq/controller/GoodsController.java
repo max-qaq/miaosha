@@ -1,12 +1,16 @@
 package com.edu.maxqaq.controller;
 
 import com.edu.maxqaq.entity.User;
+import com.edu.maxqaq.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 /**
@@ -19,13 +23,17 @@ import javax.servlet.http.HttpSession;
 @RequestMapping("/goods")
 public class GoodsController {
 
+    @Autowired
+    UserService userService;
+
     @RequestMapping("/toList")
-    public String toList(HttpSession session, Model model , @CookieValue("userTicket") String ticket){
-        if (null == ticket){
-            //没cookie,去登录
-            return "login";
-        }
-        User user = (User) session.getAttribute(ticket);
+    public String toList (Model model ,User user){
+//        if (null == userTicket){
+//            //没cookie,去登录
+//            return "login";
+//        }
+////        User user = (User) session.getAttribute(ticket);
+//        User user = userService.getUserByCookie(userTicket, request, response);
         if (null == user){
             //session的用户为空,去登录
             return "login";

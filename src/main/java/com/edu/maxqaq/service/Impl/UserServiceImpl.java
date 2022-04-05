@@ -12,10 +12,13 @@ import com.edu.maxqaq.vo.LoginVo;
 import com.edu.maxqaq.vo.RespBean;
 import com.edu.maxqaq.vo.RespBeanEnum;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.concurrent.TimeUnit;
 
 /**
  * <p>
@@ -30,6 +33,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     @Autowired
     UserMapper userMapper;
+
+    @Autowired
+    RedisTemplate redisTemplate;
 
 
     /**
@@ -60,8 +66,22 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         }
         //生成cookie
         String ticket = UUIDUtil.uuid();
-        httpServletRequest.getSession().setAttribute(ticket,user);
+        //用户信息存入redis
+        redisTemplate.opsForValue().set("user:" + ticket,user,30, TimeUnit.MINUTES);
+        //httpServletRequest.getSession().setAttribute(ticket,user);
         CookieUtil.setCookie(httpServletRequest,httpServletResponse,"userTicket",ticket);
         return RespBean.success();
+    }
+
+    @Override
+    public User getUserByCookie(String userTicket,HttpServletRequest httpServletRequest,HttpServletResponse httpServletResponse) {
+        if(StringUtils.isEmpty(userTicket)) return null;
+        //获取user
+        User user =  (User)redisTemplate.opsForValue().get("user:"+userTicket);
+        if (user != null){
+            //以防万一再存一次
+            CookieUtil.setCookie(httpServletRequest,httpServletResponse,"userTicket",userTicket);
+        }
+        return user;
     }
 }
