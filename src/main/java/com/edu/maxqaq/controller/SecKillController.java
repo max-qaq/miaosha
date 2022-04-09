@@ -11,6 +11,7 @@ import com.edu.maxqaq.service.SeckillOrderService;
 import com.edu.maxqaq.vo.GoodsVo;
 import com.edu.maxqaq.vo.RespBeanEnum;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,6 +35,8 @@ public class SecKillController {
     @Autowired
     OrderService orderService;
 
+    @Autowired
+    private RedisTemplate redisTemplate;
     @RequestMapping("/doSecKill")
     public String doSecKill(Model model, User user,Long goodsId){
         if (null == user){
@@ -47,8 +50,10 @@ public class SecKillController {
             return "secKillFail";
         }
         //判断是否重复抢购
-        SeckillOrder secKillOrder = seckillOrderService.getOne(new QueryWrapper<SeckillOrder>().eq("user_id", user.getId())
-                .eq("goods_id", goodsId));
+        //直接从redis获取
+//        SeckillOrder secKillOrder = seckillOrderService.getOne(new QueryWrapper<SeckillOrder>().eq("user_id", user.getId())
+//                .eq("goods_id", goodsId));
+        SeckillOrder secKillOrder = (SeckillOrder) redisTemplate.opsForValue().get("order:" + user.getId() + ":" + goods.getGoodsId());
         if (secKillOrder != null){
             //被抢购过了
             model.addAttribute("errmsg",RespBeanEnum.REPEATE_ERROR.getMessage());

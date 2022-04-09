@@ -4,6 +4,8 @@ import java.time.LocalDateTime;
 import java.util.Date;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.baomidou.mybatisplus.extension.conditions.update.UpdateChainWrapper;
 import com.edu.maxqaq.entity.Order;
 import com.edu.maxqaq.entity.SeckillGoods;
 import com.edu.maxqaq.entity.SeckillOrder;
@@ -15,7 +17,9 @@ import com.edu.maxqaq.service.SeckillGoodsService;
 import com.edu.maxqaq.service.SeckillOrderService;
 import com.edu.maxqaq.vo.GoodsVo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * <p>
@@ -34,12 +38,20 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     private OrderMapper orderMapper;
     @Autowired
     private SeckillOrderService seckillOrderService;
+    @Autowired
+    RedisTemplate redisTemplate;
 
+    @Transactional
     @Override
     public Order secKill(User user, GoodsVo goods) {
         SeckillGoods secKillGoods = seckillGoodsService.getOne(new QueryWrapper<SeckillGoods>().eq("goods_id", goods.getGoodsId()));
         secKillGoods.setStockCount(secKillGoods.getStockCount() - 1);
-        seckillGoodsService.updateById(secKillGoods);
+        boolean updateResult = seckillGoodsService.update(new UpdateWrapper<SeckillGoods>().setSql("stock_count = stock_count - 1").eq(
+                "goods_id", goods.getGoodsId()).gt("stock_count", 0)
+        );
+        if (!updateResult){
+            return null;
+        }
         //生成订单
         Order order = new Order();
         order.setUserId(user.getId());
@@ -58,6 +70,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         seckillOrder.setOrderId(order.getId());
         seckillOrder.setGoodsId(goods.getGoodsId());
         seckillOrderService.save(seckillOrder);
+        //订单存到redis
+        redisTemplate.opsForValue().set("order:"+user.getId()+":"+goods.getGoodsId(),seckillOrder);
 
         return order;
     }
