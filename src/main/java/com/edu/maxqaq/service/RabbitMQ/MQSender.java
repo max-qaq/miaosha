@@ -1,4 +1,4 @@
-package com.edu.maxqaq.RabbitMQTest;
+package com.edu.maxqaq.service.RabbitMQ;
 
 import com.edu.maxqaq.config.MQConfig;
 import lombok.extern.slf4j.Slf4j;
@@ -8,18 +8,18 @@ import org.springframework.stereotype.Service;
 
 /**
  * @program: miaosha
- * @description:mq生产
+ * @description:MQ发送
  * @author: max-qaq
- * @create: 2022-04-09 14:16
+ * @create: 2022-04-10 09:24
  **/
 @Service
 @Slf4j
-public class Productor {
+public class MQSender {
     @Autowired
-    RabbitTemplate rabbitTemplate;
+    private RabbitTemplate rabbitTemplate;
 
-    public void send(Object msg){
-        log.info("发送消息{}",msg);
-        rabbitTemplate.convertAndSend(MQConfig.EXCHANGE,"",msg);
+    public void sendSecKillMessage(String msg){
+        log.info("发送秒杀信息:"+msg);
+        rabbitTemplate.convertAndSend(MQConfig.EXCHANGE,"seckill.message",msg);
     }
 }

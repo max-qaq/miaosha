@@ -1,7 +1,6 @@
 package com.edu.maxqaq.controller;
 
 
-import com.edu.maxqaq.RabbitMQTest.Productor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -20,13 +19,4 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/maxqaq/user")
 public class UserController {
 
-
-    @Autowired
-    Productor productor;
-
-    @RequestMapping("/mq")
-    @ResponseBody
-    public void mq(){
-        productor.send("hello");
-    }
 }

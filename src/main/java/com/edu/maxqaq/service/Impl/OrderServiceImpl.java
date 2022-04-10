@@ -18,6 +18,7 @@ import com.edu.maxqaq.service.SeckillOrderService;
 import com.edu.maxqaq.vo.GoodsVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -44,12 +45,16 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     @Transactional
     @Override
     public Order secKill(User user, GoodsVo goods) {
+        ValueOperations valueOperations = redisTemplate.opsForValue();
+
         SeckillGoods secKillGoods = seckillGoodsService.getOne(new QueryWrapper<SeckillGoods>().eq("goods_id", goods.getGoodsId()));
         secKillGoods.setStockCount(secKillGoods.getStockCount() - 1);
         boolean updateResult = seckillGoodsService.update(new UpdateWrapper<SeckillGoods>().setSql("stock_count = stock_count - 1").eq(
                 "goods_id", goods.getGoodsId()).gt("stock_count", 0)
         );
-        if (!updateResult){
+        if (secKillGoods.getStockCount() < 1){
+            //秒杀的时候没库存就设置0
+            valueOperations.set("isStockEmpty:"+goods.getGoodsId(),0);
             return null;
         }
         //生成订单
