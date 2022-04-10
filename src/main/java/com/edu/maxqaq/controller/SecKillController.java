@@ -10,11 +10,17 @@ import com.edu.maxqaq.service.OrderService;
 import com.edu.maxqaq.service.SeckillOrderService;
 import com.edu.maxqaq.vo.GoodsVo;
 import com.edu.maxqaq.vo.RespBeanEnum;
+import org.graalvm.util.CollectionsUtil;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
+
+import java.util.List;
 
 /**
  * @program: miaosha
@@ -24,7 +30,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
  **/
 @Controller
 @RequestMapping("/secKill")
-public class SecKillController {
+public class SecKillController implements InitializingBean {
 
     @Autowired
     GoodsService goodsService;
@@ -43,6 +49,23 @@ public class SecKillController {
             //未登录 返回登录
             return "login";
         }
+        ValueOperations valueOperations = redisTemplate.opsForValue();
+        //判断是否重复抢购
+        //直接从redis获取
+        SeckillOrder secKillOrder = (SeckillOrder) redisTemplate.opsForValue().get("order:" + user.getId() + ":" + goodsId);
+        if (secKillOrder != null){
+            //被抢购过了
+            model.addAttribute("errmsg",RespBeanEnum.REPEATE_ERROR.getMessage());
+            return "secKillFail";
+        }
+        Long decrement = valueOperations.decrement("secKillGoods:" + goodsId);
+        if (decrement <= 0){
+            model.addAttribute("errmsg",RespBeanEnum.EMPTY_STOCK.getMessage());
+        }
+
+        //处理订单用RabbitMQ
+        return "orderDetail";
+        /*
         model.addAttribute("user",user);
         GoodsVo goods = goodsService.findGoodsVoByGoodsId(goodsId);
         if (goods.getStockCount() <= 0){
@@ -63,5 +86,20 @@ public class SecKillController {
         model.addAttribute("order",order);
         model.addAttribute("goods",goods);
         return "orderDetail";
+         */
+
+    }
+
+    /**
+     * 初始化,把商品库存加载到redis
+     * @throws Exception
+     */
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        List<GoodsVo> goodsVo = goodsService.findGoodsVo();
+        if (CollectionUtils.isEmpty(goodsVo)) return;
+        goodsVo.forEach(goodsVo1 -> {
+            redisTemplate.opsForValue().set("secKillGoods:"+goodsVo1.getGoodsId(),goodsVo1.getStockCount());
+        });
     }
 }

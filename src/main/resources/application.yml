@@ -48,6 +48,37 @@ spring:
 
     #密码
     password: mazhiyong
+  rabbitmq:
+#    主机
+    host: 101.35.1.194
+    username: guest
+    password: Mazhiyong1417
+#    虚拟主机
+    virtual-host: /
+    port: 5672
+    listener:
+      simple:
+#        消费者最小数量
+        concurrency: 10
+#        消费者最大数量
+        max-concurrency: 10
+#        限制消费者每次处理一条消息
+        prefetch: 1
+#        被拒绝时进入队列
+        default-requeue-rejected: true
+    template:
+      retry:
+#        开启重试
+        enabled: true
+#        重试时间
+        initial-interval: 1000ms
+#        重试次数
+        max-attempts: 3
+#        最大间隔时间
+        max-interval: 10000ms
+#        重试间隔重数,如果位2 第一次等10 第二次等20
+        multiplier: 1
+
 
 
 #      redis配置
