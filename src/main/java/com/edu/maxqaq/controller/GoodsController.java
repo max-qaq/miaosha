@@ -3,7 +3,9 @@ package com.edu.maxqaq.controller;
 import com.edu.maxqaq.entity.User;
 import com.edu.maxqaq.service.GoodsService;
 import com.edu.maxqaq.service.UserService;
+import com.edu.maxqaq.vo.DetailVo;
 import com.edu.maxqaq.vo.GoodsVo;
+import com.edu.maxqaq.vo.RespBean;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -48,12 +50,6 @@ public class GoodsController {
     @ResponseBody
     public String toList (Model model ,User user,HttpServletRequest httpServletRequest,
                           HttpServletResponse httpServletResponse){
-//        if (null == userTicket){
-//            //没cookie,去登录
-//            return "login";
-//        }
-////        User user = (User) session.getAttribute(ticket);
-//        User user = userService.getUserByCookie(userTicket, request, response);
 
         //从缓存取页面
         ValueOperations valueOperations = redisTemplate.opsForValue();
@@ -79,9 +75,9 @@ public class GoodsController {
      * @param goodsId
      * @return
      */
-    @RequestMapping("/toDetail/{goodsId}")
-    public String toDetail(Model model,User user, @PathVariable Long goodsId){
-        model.addAttribute("user",user);
+    @RequestMapping("/detail/{goodsId}")
+    @ResponseBody
+    public RespBean toDetail(Model model, User user, @PathVariable Long goodsId){
         GoodsVo goodsVo = goodsService.findGoodsVoByGoodsId(goodsId);
         Date startDate = goodsVo.getStartDate();
         Date endDate = goodsVo.getEndDate();
@@ -102,10 +98,13 @@ public class GoodsController {
             secKillStatus = 1;
             remainSeconds = 0;
         }
-        model.addAttribute("remainSeconds",remainSeconds);
-        model.addAttribute("secKillStatus",secKillStatus);
-        model.addAttribute("goods",goodsVo);
-        log.info("{}",goodsService.findGoodsVoByGoodsId(goodsId));
-        return "goodsDetail";
+        DetailVo detailVo = new DetailVo();
+        detailVo.setUser(user);
+        detailVo.setGoodsVo(goodsVo);
+        detailVo.setSecKillStatus(secKillStatus);
+        detailVo.setRemainSeconds(remainSeconds);
+
+        return RespBean.success(detailVo);
+
     }
 }
